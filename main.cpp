@@ -96,10 +96,10 @@ public:
         // Initialize DMA
         Log("[1/5] Initializing DMA device...");
         
-        LPSTR argv[] = {
-            (LPSTR)"",
-            (LPSTR)"-device",
-            (LPSTR)"fpga"
+        LPCSTR argv[] = {
+            "",
+            "-device",
+            "fpga"
         };
         
         hVMM = VMMDLL_Initialize(3, argv);
@@ -129,7 +129,8 @@ public:
             procInfo.magic = VMMDLL_PROCESS_INFORMATION_MAGIC;
             procInfo.wVersion = VMMDLL_PROCESS_INFORMATION_VERSION;
             
-            if (VMMDLL_ProcessGetInformation(hVMM, pids[i], &procInfo, sizeof(procInfo))) {
+            SIZE_T cbProcInfo = sizeof(procInfo);
+            if (VMMDLL_ProcessGetInformation(hVMM, pids[i], &procInfo, &cbProcInfo)) {
                 std::string procName = procInfo.szName;
                 if (procName.find("PioneerGame") != std::string::npos || 
                     procName.find("pioneerGame") != std::string::npos) {
