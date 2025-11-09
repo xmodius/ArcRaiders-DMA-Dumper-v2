@@ -1,9 +1,5 @@
 #include <Windows.h>
-
-// Dynamically load vmm.dll functions
-#define VMMDLL_DYNAMIC_LOAD
-
-#include "vmmdll.h"
+#include "vmm_loader.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -81,6 +77,7 @@ public:
         if (hVMM) VMMDLL_Close(hVMM);
         if (logFile.is_open()) logFile.close();
         if (headerFile.is_open()) headerFile.close();
+        UnloadVmmDll();
     }
     
     bool Initialize() {
@@ -94,6 +91,13 @@ public:
         
         if (!logFile.is_open() || !headerFile.is_open()) {
             Log("[ERROR] Failed to create output files!");
+            return false;
+        }
+        
+        // Load vmm.dll
+        if (!LoadVmmDll()) {
+            Log("[ERROR] Failed to load vmm.dll!");
+            Log("Make sure vmm.dll and its dependencies are in the same folder.");
             return false;
         }
         
