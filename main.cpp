@@ -86,8 +86,29 @@ public:
         Log("  Using MemProcFS DMA");
         Log("==============================================\n");
         
-        logFile.open("offsets.txt");
-        headerFile.open("Offsets_Dumped.h");
+        // Use current directory for output files
+        char currentDir[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, currentDir);
+        std::string offsetsPath = std::string(currentDir) + "\\offsets.txt";
+        std::string headerPath = std::string(currentDir) + "\\Offsets_Dumped.h";
+        
+        logFile.open(offsetsPath);
+        headerFile.open(headerPath);
+        
+        if (!logFile.is_open() || !headerFile.is_open()) {
+            // Try user's temp directory
+            char tempPath[MAX_PATH];
+            GetTempPathA(MAX_PATH, tempPath);
+            offsetsPath = std::string(tempPath) + "offsets.txt";
+            headerPath = std::string(tempPath) + "Offsets_Dumped.h";
+            
+            logFile.open(offsetsPath);
+            headerFile.open(headerPath);
+            
+            if (logFile.is_open() && headerFile.is_open()) {
+                Log("[INFO] Output files will be saved to: " + std::string(tempPath));
+            }
+        }
         
         if (!logFile.is_open() || !headerFile.is_open()) {
             Log("[ERROR] Failed to create output files!");
