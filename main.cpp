@@ -145,12 +145,26 @@ public:
         Log("[2/5] Searching for Arc Raiders process...");
         
         DWORD pids[4096];
-        SIZE_T cPIDs = 0;
+        SIZE_T cPIDs = 4096;
         
-        if (!VMMDLL_PidList(hVMM, pids, &cPIDs)) {
+        // Retry a few times in case DMA needs time to initialize
+        bool success = false;
+        for (int retry = 0; retry < 3; retry++) {
+            if (VMMDLL_PidList(hVMM, pids, &cPIDs)) {
+                success = true;
+                break;
+            }
+            Log("[DEBUG] Retry " + std::to_string(retry + 1) + "/3...");
+            Sleep(1000);
+        }
+        
+        if (!success || cPIDs == 0) {
             Log("[ERROR] Failed to get process list!");
+            Log("[DEBUG] Make sure the Gaming PC is powered on and DMA is connected.");
             return false;
         }
+        
+        Log("[DEBUG] Found " + std::to_string(cPIDs) + " processes");
         
         bool found = false;
         for (SIZE_T i = 0; i < cPIDs; i++) {
