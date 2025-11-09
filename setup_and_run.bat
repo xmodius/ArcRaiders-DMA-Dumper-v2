@@ -14,22 +14,7 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-echo [1/4] Compiling dumper...
-echo.
-
-cl.exe /EHsc /std:c++17 /O2 /Fe:ArcRaiders_DMA_Dumper.exe main.cpp Advapi32.lib Shell32.lib >nul 2>&1
-
-if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Compilation failed!
-    echo.
-    pause
-    exit /b 1
-)
-
-echo [SUCCESS] Compilation complete!
-echo.
-
-echo [2/4] Checking for DMA DLLs...
+echo [1/3] Copying DMA DLLs...
 echo.
 
 set DMA_PATH=C:\Users\enfui\Desktop\lones-DMA-speed-test-main\lones-DMA-speed-test-main
@@ -42,15 +27,31 @@ if not exist "%DMA_PATH%\vmm.dll" (
     exit /b 1
 )
 
-echo [3/4] Copying DMA DLLs...
-echo.
-
 copy "%DMA_PATH%\*.dll" . >nul 2>&1
 
 echo [SUCCESS] DMA DLLs copied!
 echo.
 
-echo [4/4] Ready to run!
+echo [2/3] Compiling dumper...
+echo.
+
+cl.exe /EHsc /std:c++17 /O2 /Fe:ArcRaiders_DMA_Dumper.exe main.cpp Advapi32.lib Shell32.lib 2>compile_error.txt
+
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Compilation failed!
+    echo.
+    type compile_error.txt
+    echo.
+    pause
+    exit /b 1
+)
+
+del compile_error.txt 2>nul
+
+echo [SUCCESS] Compilation complete!
+echo.
+
+echo [3/3] Ready to run!
 echo.
 echo ========================================
 echo IMPORTANT:

@@ -1,4 +1,8 @@
 #include <Windows.h>
+
+// Dynamically load vmm.dll functions
+#define VMMDLL_DYNAMIC_LOAD
+
 #include "vmmdll.h"
 #include <iostream>
 #include <fstream>
